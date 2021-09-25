@@ -51,7 +51,7 @@ func GetUsers() ([]payloads.User, error) {
 		}
 
 		if len(followeds) == 0 {
-			user.Followed = []payloads.Follower{}
+			user.Followed = []payloads.UserLike{}
 		} else {
 			user.Followed = followeds
 		}
@@ -62,7 +62,7 @@ func GetUsers() ([]payloads.User, error) {
 		}
 
 		if len(followers) == 0 {
-			user.Followers = []payloads.Follower{}
+			user.Followers = []payloads.UserLike{}
 		} else {
 			user.Followers = followers
 		}
@@ -77,8 +77,8 @@ func GetUsers() ([]payloads.User, error) {
 	return users, nil
 }
 
-func GetFollowers(id int64, query string) ([]payloads.Follower, error) {
-	var followeds []payloads.Follower
+func GetFollowers(id int64, query string) ([]payloads.UserLike, error) {
+	var followeds []payloads.UserLike
 
 	rows, error := database.Client.Query(query, id)
 	if error != nil {
@@ -87,7 +87,7 @@ func GetFollowers(id int64, query string) ([]payloads.Follower, error) {
 	defer rows.Close()
 
 	for rows.Next() {
-		var followed payloads.Follower
+		var followed payloads.UserLike
 
 		if error := rows.Scan(&followed.Username); error != nil {
 			return followeds, error

@@ -2,7 +2,7 @@ package services
 
 import (
 	"database/sql"
-	"errors"
+	"fmt"
 	"go-gin-postgres-relations/program/database"
 	"go-gin-postgres-relations/program/inputs"
 	"go-gin-postgres-relations/program/payloads"
@@ -30,6 +30,18 @@ func GetPostsByUserId(id int64) ([]payloads.Post, error) {
 		if error := rows.Scan(&post.PostId, &post.Title); error != nil {
 			return posts, error
 		}
+
+		postlikes, error := GetPostLikesByPostId(post.PostId)
+		if error != nil {
+			return posts, error
+		}
+
+		if len(postlikes) == 0 {
+			post.Likes = []payloads.PostLike{}
+		} else {
+			post.Likes = postlikes
+		}
+
 		posts = append(posts, post)
 	}
 
@@ -45,10 +57,21 @@ func GetPost(id int64) (payloads.Post, error) {
 
 	if error := database.Client.QueryRow(GET_POST_QUERY, id).Scan(&post.PostId, &post.Title); error != nil {
 		if error == sql.ErrNoRows {
-			return payloads.Post{}, errors.New("no record with this id :(")
+			return payloads.Post{}, fmt.Errorf("no post with id of: %d", id)
 		} else {
 			return payloads.Post{}, error
 		}
+	}
+
+	postlikes, error := GetPostLikesByPostId(post.PostId)
+	if error != nil {
+		return post, error
+	}
+
+	if len(postlikes) == 0 {
+		post.Likes = []payloads.PostLike{}
+	} else {
+		post.Likes = postlikes
 	}
 
 	return post, nil

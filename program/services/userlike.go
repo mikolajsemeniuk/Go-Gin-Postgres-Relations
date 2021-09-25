@@ -24,20 +24,6 @@ func CheckIfUserLikeExists(followedId int64, followerId int64) (bool, error) {
 	return ifExists, nil
 }
 
-func ModifyUserLike(followedId int64, followerId int64, command string) error {
-	result, error := database.Client.Exec(command, followedId, followerId)
-	if error != nil {
-		return error
-	}
-
-	rows, error := result.RowsAffected()
-	if error != nil || rows == 0 {
-		return error
-	}
-
-	return nil
-}
-
 func SetUserLike(followedId int64, followerId int64) error {
 	if followedId == followerId {
 		return errors.New("you can't like yourself")
@@ -56,10 +42,22 @@ func SetUserLike(followedId int64, followerId int64) error {
 		return error
 	}
 
+	var command string
 	if exists {
-		ModifyUserLike(followedId, followerId, REMOVE_USERLIKE_COMMAND)
+		command = REMOVE_USERLIKE_COMMAND
 	} else {
-		ModifyUserLike(followedId, followerId, ADD_USERLIKE_COMMAND)
+		command = ADD_USERLIKE_COMMAND
 	}
+
+	result, error := database.Client.Exec(command, followedId, followerId)
+	if error != nil {
+		return error
+	}
+
+	rows, error := result.RowsAffected()
+	if error != nil || rows == 0 {
+		return error
+	}
+
 	return nil
 }

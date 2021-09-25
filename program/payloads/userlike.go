@@ -1,5 +1,5 @@
 package payloads
 
-type Follower struct {
+type UserLike struct {
 	Username string
 }

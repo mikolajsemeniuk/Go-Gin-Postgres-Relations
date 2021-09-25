@@ -18,7 +18,7 @@ CREATE TABLE UserLikes (
     CONSTRAINT fk_Follower FOREIGN KEY(FollowerId) REFERENCES Users(UserId) ON DELETE CASCADE
 );
 
-CREATE TABLE PostsLikes (
+CREATE TABLE PostLikes (
     UserId INT NOT NULL,
     PostId INT NOT NULL,
     PRIMARY KEY (UserId, PostId),
@@ -56,9 +56,12 @@ VALUES
     (2, 4);
 
 INSERT INTO
-    PostsLikes (UserId, PostId)
+    PostLikes (UserId, PostId)
 VALUES
     (1, 3),
     (2, 4),
     (3, 7),
-    (4, 5);
+    (4, 5),
+    (3, 3),
+    (4, 3),
+    (2, 7);

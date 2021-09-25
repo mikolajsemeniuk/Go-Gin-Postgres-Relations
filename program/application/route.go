@@ -31,4 +31,7 @@ func Route() {
 
 	// USERLIKES
 	router.PATCH("/userlike/:followedid/:followerid", controllers.SetUserLike)
+
+	// POSTLIKES
+	router.PATCH("/postlike/:userid/:postid", controllers.SetPostLike)
 }
