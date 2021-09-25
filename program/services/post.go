@@ -5,7 +5,7 @@ import (
 	"errors"
 	"go-gin-postgres-relations/program/database"
 	"go-gin-postgres-relations/program/inputs"
-	"go-gin-postgres-relations/program/models"
+	"go-gin-postgres-relations/program/payloads"
 )
 
 const (
@@ -16,8 +16,8 @@ const (
 	REMOVE_POST_COMMAND = "DELETE FROM Posts WHERE PostId = $1;"
 )
 
-func GetPostsByUserId(id int64) ([]models.Post, error) {
-	var posts []models.Post
+func GetPostsByUserId(id int64) ([]payloads.Post, error) {
+	var posts []payloads.Post
 
 	rows, error := database.Client.Query(GET_POSTS_QUERY, id)
 	if error != nil {
@@ -26,7 +26,7 @@ func GetPostsByUserId(id int64) ([]models.Post, error) {
 	defer rows.Close()
 
 	for rows.Next() {
-		var post models.Post
+		var post payloads.Post
 		if error := rows.Scan(&post.PostId, &post.Title); error != nil {
 			return posts, error
 		}
@@ -38,6 +38,20 @@ func GetPostsByUserId(id int64) ([]models.Post, error) {
 	}
 
 	return posts, nil
+}
+
+func GetPost(id int64) (payloads.Post, error) {
+	var post payloads.Post
+
+	if error := database.Client.QueryRow(GET_POST_QUERY, id).Scan(&post.PostId, &post.Title); error != nil {
+		if error == sql.ErrNoRows {
+			return payloads.Post{}, errors.New("no record with this id :(")
+		} else {
+			return payloads.Post{}, error
+		}
+	}
+
+	return post, nil
 }
 
 func AddPost(userId int64, input inputs.Post) error {
@@ -56,20 +70,6 @@ func AddPost(userId int64, input inputs.Post) error {
 	}
 
 	return nil
-}
-
-func GetPost(id int64) (models.Post, error) {
-	var post models.Post
-
-	if error := database.Client.QueryRow(GET_POST_QUERY, id).Scan(&post.PostId, &post.Title); error != nil {
-		if error == sql.ErrNoRows {
-			return models.Post{}, errors.New("no record with this id :(")
-		} else {
-			return models.Post{}, error
-		}
-	}
-
-	return post, nil
 }
 
 func UpdatePost(id int64, input inputs.Post) error {

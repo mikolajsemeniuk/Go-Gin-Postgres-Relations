@@ -11,16 +11,16 @@ CREATE TABLE Posts (
 );
 
 CREATE TABLE UserLikes (
-    FollowedId INT,
-    FollowerId INT,
+    FollowedId INT NOT NULL,
+    FollowerId INT NOT NULL,
     PRIMARY KEY (FollowedId, FollowerId),
     CONSTRAINT fk_Followed FOREIGN KEY(FollowedId) REFERENCES Users(UserId) ON DELETE CASCADE,
     CONSTRAINT fk_Follower FOREIGN KEY(FollowerId) REFERENCES Users(UserId) ON DELETE CASCADE
 );
 
 CREATE TABLE PostsLikes (
-    UserId INT,
-    PostId INT,
+    UserId INT NOT NULL,
+    PostId INT NOT NULL,
     PRIMARY KEY (UserId, PostId),
     CONSTRAINT fk_User FOREIGN KEY(UserId) REFERENCES Users(UserId) ON DELETE CASCADE,
     CONSTRAINT fk_Post FOREIGN KEY(PostId) REFERENCES Posts(PostId) ON DELETE CASCADE
