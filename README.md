@@ -1,6 +1,7 @@
 # Go-Gin-Postgres-Relations
 commands:
 ```sh
+docker-compose up -d
 docker container ls
 docker cp init.sql <container_id>:/home/init.sql
 docker exec -it <container_id> /bin/bash
